@@ -9,7 +9,6 @@ int main()
     char word[20];
     char keywords[18][8]={"break","case","char","const","continue","do","else","enum","float","for","goto","if","int","long","record","return","static","while"};
     char string[500];
-    char comments[500];
 
     FILE*fileR;//dosya islemleri
     FILE*fileW;
@@ -48,6 +47,7 @@ int main()
                             else//+ operator'u durumu.
                                 {
                                     fputs("Operator(+)\n" , fileW);
+                                    continue;
                                 }
                         }
                     if(ch=='-')
@@ -60,6 +60,7 @@ int main()
                             else//- operator'u durumu.
                                 {
                                     fputs("Operator(-)\n" ,fileW);
+                                    continue;
                                 }
                         }
                     if(ch==':')//:= operator durumunu inceliyoruz.
@@ -106,9 +107,60 @@ int main()
                 }
             if(ch=='('|| ch==')'|| ch=='[' || ch==']'||ch=='{'||ch=='}')//brackets kontrolu.
                 {
-                    bracketsControl(fileW,ch);
+                    if(ch=='(')
+                    {
+                        ch=fgetc(fileR);
+                        if(ch=='*')//* ile devam ediyor ise
+                        {
+                            ch=fgetc(fileR);
+                            while(ch!=EOF && ch!='*')
+                            {
+                                ch=fgetc(fileR);
+                            }
+                            if(ch=='*')
+                            {
+                                ch=fgetc(fileR);
+                                if(ch==')')//*dan sonra ) ile de kapaniyorsa yorum satiri demektir.
+                                {
+                                    ch=getc(fileR);
+                                    continue;
+                                }
+                            }
+                            else if(ch==EOF)//yorum bitmeden dosya biterse lexical error.
+                            {
+                                printf("ERROR : a comment cannot terminate before the file end");
+                            }
+                        }
+                        else
+                        {
+                            fputs("LeftPar\n", fileW);
+                            continue;
+                        }
+
+                    }
+                    if(ch==')')
+                    {
+                        fputs("RightPar\n", fileW);
+                    }
+                    if(ch=='[')
+                    {
+                        fputs("LeftSquareBracket\n", fileW);
+                    }
+                    if(ch==']')
+                    {
+                        fputs("RightSquareBracket\n", fileW);
+                    }
+                    if(ch=='{')
+                    {
+                        fputs("LeftCurlyBracket\n", fileW);
+                    }
+                    if(ch=='}')
+                    {
+                        fputs("RightCurlyBracket\n", fileW);
+                    }
+
                 }
-            /*if(ch=='"')//strings kontrolu
+            if(ch=='"')//strings kontrolu
                 {
                     int counter=0;
                     ch=fgetc(fileR);
@@ -129,70 +181,66 @@ int main()
                     fputs("String Constants (" ,fileW );
                     fputs(string,fileW);
                     fputs(")\n" ,fileW);
-                }*/
-            if(ch=='(')//parantez ile basliyor ve
-                {
-                   ch=fgetc(fileR);
-                   if(ch=='*')//* ile devam ediyor ise
-                   {
-                        int counter=0;
-                        ch=fgetc(fileR);
-                        while(ch!='*' && ch!=EOF)
-                        {
-                            comments[counter]=ch;
-                            counter++;
-                            ch=fgetc(fileR);
-                        }
-                        if(ch=='*')
-                        {
-                            ch=fgetc(fileR);
-                            if(ch==')')//*dan sonra ) ile de kapaniyorsa yorum satiri demektir.
-                            {
-                                comments[counter]='\0';
-                                comments[counter+1]='\0';
-                            }
-                             else if(ch==EOF)//yorum bitmeden dosya biterse lexical error.
-                            {
-                                printf("ERROR : a comment cannot terminate before the file end");
-                            }
-                        }
-
-                   }
-
-
                 }
+           /*if((96 < ch && ch <123) || (64 < ch && ch < 91))//ASCII kodlari ile harf olup olmadigini kontrol ediyorum.
+                {
+                    int wordlength=0;
+                    if((96 < ch && ch <123))//kucuk harf ile basliyorsa.
+                    {
+                        word[wordlength]=ch;
+                        ch=fgetc(fileR);
+                        while((96 < ch && ch <123)|| ch=='_' || isdigit(ch))//identifier kismi iken
+                        {
+                            wordlength++;
+                            word[wordlength]=ch;
+                            ch=fgetc(fileR);
+                        }
+
+                        if(!isKeyword(word,keywords))
+                        {
+                            if(wordlength>21)//wordlength -1 den baslattigimiz icin.
+                            {
+                                printf("ERROR : Maximum identifier size is 20 characters!");
+                                return 1;
+                            }
+                            else
+                            {
+                                word[wordlength+1]='\0';
+                                fputs("Identifier (" ,fileW );
+                                fputs(word,fileW);
+                                fputs(")\n" ,fileW);
+                            }
+
+                        }
+                        else if(isKeyword(word,keywords))
+                        {
+                            fputs("Keyword (" ,fileW );
+                            fputs(word,fileW);
+                            fputs(")\n" ,fileW);
+                        }
+                        wordlength=0;
+
+                    }
+
+                }*/
                 ch=getc(fileR);
         }//if
     }//while
 }//main
 
-void bracketsControl(FILE*fileW , char ch)
+int isKeyword(char word[],char keywords[][8])
 {
-    if(ch=='(')
+    for(int x=0;x<18;x++)
     {
-        fputs("LeftPar\n" , fileW);
+        if(word==keywords[x][8])
+            {
+                return 1;
+            }
+        else
+            {
+                return 0;
+            }
     }
-    if(ch==')')
-    {
-        fputs("RightPar\n", fileW);
-    }
-    if(ch=='[')
-    {
-        fputs("LeftSquareBracket\n", fileW);
-    }
-    if(ch==']')
-    {
-        fputs("RightSquareBracket\n", fileW);
-    }
-    if(ch=='{')
-    {
-        fputs("LeftCurlyBracket\n", fileW);
-    }
-    if(ch=='}')
-    {
-        fputs("RightCurlyBracket\n", fileW);
-    }
-
 }
 
 void endofLine(FILE*fileW)
