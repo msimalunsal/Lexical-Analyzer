@@ -5,9 +5,10 @@ int main()
 {
     char ch;
     int intlength=0;
+    int wordorkey=0;
     char integer[10];
     char word[20];
-    char keywords[18][8]={"break","case","char","const","continue","do","else","enum","float","for","goto","if","int","long","record","return","static","while"};
+    char keywords[18][20]={"BREAK","CASE","CHAR","CONST","CONTINUE","DO","ELSE","ENUM","FLOAT","FOR","GOTO","IF","INT","LONG","RECORD","RETURN","STATIC","WHILE"};
     char string[500];
 
     FILE*fileR;//dosya islemleri
@@ -125,11 +126,13 @@ int main()
                                     ch=getc(fileR);
                                     continue;
                                 }
+                                else if(ch==EOF)//yorum bitmeden dosya biterse lexical error.
+                                {
+                                    printf("ERROR : a comment cannot terminate before the file end");
+                                    return 0;
+                                }
                             }
-                            else if(ch==EOF)//yorum bitmeden dosya biterse lexical error.
-                            {
-                                printf("ERROR : a comment cannot terminate before the file end");
-                            }
+
                         }
                         else
                         {
@@ -182,66 +185,51 @@ int main()
                     fputs(string,fileW);
                     fputs(")\n" ,fileW);
                 }
-           /*if((96 < ch && ch <123) || (64 < ch && ch < 91))//ASCII kodlari ile harf olup olmadigini kontrol ediyorum.
+            if(('a' < ch && ch <'z') || ('A' < ch && ch < 'Z'))
                 {
                     int wordlength=0;
-                    if((96 < ch && ch <123))//kucuk harf ile basliyorsa.
+                    while(('a' < ch && ch <'z')|| ('A' < ch && ch < 'Z')|| (ch=='_') || isdigit(ch))
                     {
+                       if(wordlength>20)
+                        {
+                            printf("ERROR : Maximum identifier size is 20 characters.  ");
+                            return 1;
+                        }
+                        if(('a' < ch && ch <'z'))//kucuk karakter de olsa buyuge cevirilir.
+                        {
+                            ch=toupper(ch);
+                        }
                         word[wordlength]=ch;
+                        wordlength++;
                         ch=fgetc(fileR);
-                        while((96 < ch && ch <123)|| ch=='_' || isdigit(ch))//identifier kismi iken
-                        {
-                            wordlength++;
-                            word[wordlength]=ch;
-                            ch=fgetc(fileR);
-                        }
-
-                        if(!isKeyword(word,keywords))
-                        {
-                            if(wordlength>21)//wordlength -1 den baslattigimiz icin.
+                    }
+                    word[wordlength+1]='\0';
+                    for(int x=0;x<18;x++)
+                    {
+                        if(strcmp(word,keywords[x]) == 0)
                             {
-                                printf("ERROR : Maximum identifier size is 20 characters!");
-                                return 1;
-                            }
-                            else
-                            {
-                                word[wordlength+1]='\0';
-                                fputs("Identifier (" ,fileW );
+                                fputs("Keyword(",fileW);
                                 fputs(word,fileW);
-                                fputs(")\n" ,fileW);
+                                fputs(")\n",fileW);
+                                wordorkey=1;
+                                break;
                             }
-
-                        }
-                        else if(isKeyword(word,keywords))
-                        {
-                            fputs("Keyword (" ,fileW );
-                            fputs(word,fileW);
-                            fputs(")\n" ,fileW);
-                        }
-                        wordlength=0;
-
+                    }
+                    if(wordorkey==0)
+                    {
+                        fputs("Identifier(",fileW);
+                        fputs(word,fileW);
+                        fputs(")\n",fileW);
                     }
 
-                }*/
+                    wordlength=0;
+                    continue;
+                }
                 ch=getc(fileR);
         }//if
     }//while
 }//main
 
-int isKeyword(char word[],char keywords[][8])
-{
-    for(int x=0;x<18;x++)
-    {
-        if(word==keywords[x][8])
-            {
-                return 1;
-            }
-        else
-            {
-                return 0;
-            }
-    }
-}
 
 void endofLine(FILE*fileW)
 {
