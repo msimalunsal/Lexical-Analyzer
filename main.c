@@ -98,6 +98,7 @@ int main()
                             fputs(integer, fileW);
                             fputs(")\n",fileW);
                         }
+                    memset(integer, 0, sizeof(integer));
                     intlength=0;
                     continue;
 
@@ -139,6 +140,7 @@ int main()
                             fputs("LeftPar\n", fileW);
                             continue;
                         }
+
 
                     }
                     if(ch==')')
@@ -185,8 +187,10 @@ int main()
                     fputs(string,fileW);
                     fputs(")\n" ,fileW);
                 }
-            if(('a' < ch && ch <'z') || ('A' < ch && ch < 'Z'))
+
+            if(('a' < ch && ch <'z') || ('A' < ch && ch < 'Z'))//identifier ve keywords kotnrolu.
                 {
+                    wordorkey=0;
                     int wordlength=0;
                     while(('a' < ch && ch <'z')|| ('A' < ch && ch < 'Z')|| (ch=='_') || isdigit(ch))
                     {
@@ -203,7 +207,7 @@ int main()
                         wordlength++;
                         ch=fgetc(fileR);
                     }
-                    word[wordlength+1]='\0';
+                    printf("\n");
                     for(int x=0;x<18;x++)
                     {
                         if(strcmp(word,keywords[x]) == 0)
@@ -221,7 +225,8 @@ int main()
                         fputs(word,fileW);
                         fputs(")\n",fileW);
                     }
-
+                    printf(word);
+                    memset(word, 0, sizeof(word));
                     wordlength=0;
                     continue;
                 }
