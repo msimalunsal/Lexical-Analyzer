@@ -6,6 +6,7 @@ int main()
     char ch;
     int intlength=0;
     int wordorkey=0;
+    int wordlength=0;
     char integer[10];
     char word[20];
     char keywords[18][20]={"BREAK","CASE","CHAR","CONST","CONTINUE","DO","ELSE","ENUM","FLOAT","FOR","GOTO","IF","INT","LONG","RECORD","RETURN","STATIC","WHILE"};
@@ -90,7 +91,8 @@ int main()
                         }
                     if(intlength>10)
                         {
-                            printf("ERROR : Maximum integer size is 10 digits . ");
+                            printf("\tERROR : Maximum integer size is 10 digits .\n ");
+                            return 1;
                         }
                     else
                         {
@@ -181,25 +183,25 @@ int main()
                             }
                     }
 
-                    string[counter]='\0';//bu iki satiri yapmazsak K\ gibi bir durum sÃ¶z konusu kaliyordu.
+                    string[counter]='\0';//bu iki satiri yapmazsak K\ gibi bir durum söz konusu kaliyordu.
                     string[counter+1]='0';
                     fputs("String Constants (" ,fileW );
                     fputs(string,fileW);
                     fputs(")\n" ,fileW);
                 }
 
-            if(('a' < ch && ch <'z') || ('A' < ch && ch < 'Z'))//identifier ve keywords kotnrolu.
+            if(('a' <= ch && ch <='z') || ('A' <= ch && ch <= 'Z'))//identifier ve keywords kotnrolu.
                 {
                     wordorkey=0;
-                    int wordlength=0;
-                    while(('a' < ch && ch <'z')|| ('A' < ch && ch < 'Z')|| (ch=='_') || isdigit(ch))
+                    wordlength=0;
+                    while(('a' <= ch && ch <='z')|| ('A' <= ch && ch <= 'Z')|| (ch=='_') || isdigit(ch))
                     {
-                       if(wordlength>20)
+                        if(wordlength>20)
                         {
-                            printf("ERROR : Maximum identifier size is 20 characters.  ");
+                            printf("\tERROR : Maximum identifier size is 20 characters.  \n");
                             return 1;
                         }
-                        if(('a' < ch && ch <'z'))//kucuk karakter de olsa buyuge cevirilir.
+                        if(('a' <= ch && ch <='z'))//kucuk karakter de olsa buyuge cevirilir.
                         {
                             ch=toupper(ch);
                         }
@@ -207,11 +209,13 @@ int main()
                         wordlength++;
                         ch=fgetc(fileR);
                     }
-                    printf("\n");
                     for(int x=0;x<18;x++)
                     {
-                        if(strcmp(word,keywords[x]) == 0)
+                        if(strcmp(word,keywords[x]) == 0)//kelime eger keyword ise bu if'e girer ve wordorkey degiskeni 1 olur.
                             {
+                                for(int a=0;a<wordlength;a++){
+                                    word[a]=tolower(word[a]);
+                                }
                                 fputs("Keyword(",fileW);
                                 fputs(word,fileW);
                                 fputs(")\n",fileW);
@@ -219,13 +223,12 @@ int main()
                                 break;
                             }
                     }
-                    if(wordorkey==0)
+                    if(wordorkey==0)//eger word keyword degilse identifier olarak bastiririz.
                     {
                         fputs("Identifier(",fileW);
                         fputs(word,fileW);
                         fputs(")\n",fileW);
                     }
-                    printf(word);
                     memset(word, 0, sizeof(word));
                     wordlength=0;
                     continue;

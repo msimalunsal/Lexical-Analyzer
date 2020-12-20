@@ -1,0 +1,7 @@
+hi:=hello+25; (*addition*) 
+hello++; (*increment*)
+While(int x:=0){
+	if(y:=25){
+		return("This is a string");
+	};
+};
