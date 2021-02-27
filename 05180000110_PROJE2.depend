@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1588950733 source:c:\users\melek\desktop\05180000110_proje2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
+1589470464 source:c:\users\melek\desktop\pl\projeler\05180000110_melek_simal_unsal\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
